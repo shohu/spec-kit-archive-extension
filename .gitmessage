@@ -1,0 +1,31 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Type: feat, fix, chore, test, docs, refactor, style, perf, ci, build
+# Scope: Affected area (e.g., core, archive, docs, config)
+# Subject: Brief description (within 50 characters)
+# Body: Detailed explanation (if needed)
+# Footer: Breaking changes, issue numbers, etc.
+
+# ────────────────────────────────────────────────
+# 🧭 Guidelines
+# - Keep commits at a "human-reviewable" granularity
+# - Never push directly to branches, even for AI-generated changes
+# - All changes must go through review and verification process
+# - Specify appropriate type for tests, docs, and config changes
+#
+# 🧠 Examples:
+#   feat(archive): add intelligent merge for data-model entities
+#   fix(core): resolve section parsing issue with nested headings
+#   chore(config): update merge-rules.json template
+#
+# 🔐 Operational Rules
+# - Use "AI:" prefix for AI-generated commits
+#   Example: AI: feat(docs): auto-generate usage examples
+# - Do not merge/push to main branch until human review is complete
+# - Security-related changes must be reviewed and approved
+# - Follow Conventional Commits format even for auto-generated commits
+# ────────────────────────────────────────────────
