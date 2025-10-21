@@ -7,7 +7,7 @@ set -euo pipefail
 # Constitution-driven intelligent spec archive system for Spec-Kit projects
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/spec-kit-archive-extension/main/install.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/shohu/spec-kit-archive-extension/main/install.sh | bash
 #   
 # Or:
 #   ./install.sh --target /path/to/project
@@ -41,7 +41,7 @@ Example:
   ./install.sh --target /path/to/my-project
 
   # Remote install (recommended)
-  curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/spec-kit-archive-extension/main/install.sh | bash
+  curl -sSL https://raw.githubusercontent.com/shohu/spec-kit-archive-extension/main/install.sh | bash
 
 Requirements:
   - Git repository
@@ -141,7 +141,7 @@ check_constitution() {
         log "   - Non-functional requirements"
         log "   - Scope constraints"
         log ""
-        log "   See: https://github.com/YOUR_USERNAME/spec-kit-archive-extension#constitution-setup"
+        log "   See: https://github.com/shohu/spec-kit-archive-extension#constitution-setup"
     else
         log "✅ constitution.md found"
     fi
@@ -208,7 +208,7 @@ show_next_steps() {
 
 📚 Documentation:
    - README: $target/.specify/scripts/bash/archive/README.md
-   - GitHub: https://github.com/YOUR_USERNAME/spec-kit-archive-extension
+   - GitHub: https://github.com/shohu/spec-kit-archive-extension
 
 💡 Tips:
    - The system uses constitution-driven merge strategies

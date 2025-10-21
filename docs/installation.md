@@ -3,7 +3,7 @@
 ## Quick Install
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/spec-kit-archive-extension/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/shohu/spec-kit-archive-extension/main/install.sh | bash
 ```
 
 ## Requirements
@@ -15,7 +15,7 @@ curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/spec-kit-archive-exten
 ## Manual Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/spec-kit-archive-extension.git
+git clone https://github.com/shohu/spec-kit-archive-extension.git
 cd spec-kit-archive-extension
 ./install.sh --target /path/to/your-project
 ```
