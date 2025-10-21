@@ -62,7 +62,7 @@ Content...
 
 Auto-detects patterns:
 
-- `^フェーズ[0-9]+:` → accumulate (tasks)
+- `^Phase [0-9]+:` → accumulate (tasks)
 - `^[A-Z][a-zA-Z]+$` → merge_entities (data model)
 - `^- \*\*(FR|NFR)-(\d+)` → merge_by_id (requirements)
 
