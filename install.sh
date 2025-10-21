@@ -116,14 +116,14 @@ install_prompt() {
     fi
     
     # Install for Cursor IDE (Multi-model support)
-    local cursor_dest="$target/.cursor/prompts"
+    local cursor_dest="$target/.cursor/commands"
     mkdir -p "$cursor_dest"
     
-    if [[ -f "$SCRIPT_DIR/.cursor/prompts/speckit.archive.md" ]]; then
-        cp "$SCRIPT_DIR/.cursor/prompts/speckit.archive.md" "$cursor_dest/"
-        log "✅ Cursor IDE prompt installed (.cursor/prompts/) - Multi-model support"
+    if [[ -f "$SCRIPT_DIR/.cursor/commands/speckit.archive.md" ]]; then
+        cp "$SCRIPT_DIR/.cursor/commands/speckit.archive.md" "$cursor_dest/"
+        log "✅ Cursor IDE command installed (.cursor/commands/) - Multi-model support"
     else
-        log "⚠️  Cursor prompt not found"
+        log "⚠️  Cursor command not found"
     fi
 }
 
@@ -157,17 +157,17 @@ update_gitignore() {
             log "Adding AI environment ignore rules to .gitignore"
             cat >> "$gitignore" <<'EOF'
 
-# Spec-Kit AI prompts (OpenAI Codex & Cursor IDE)
-# Track prompts, ignore other artifacts
+# Spec-Kit AI commands (OpenAI Codex & Cursor IDE)
+# Track commands, ignore other artifacts
 .codex/*
 !.codex/prompts/
 .codex/prompts/*
 !.codex/prompts/speckit.archive.md
 
 .cursor/*
-!.cursor/prompts/
-.cursor/prompts/*
-!.cursor/prompts/speckit.archive.md
+!.cursor/commands/
+.cursor/commands/*
+!.cursor/commands/speckit.archive.md
 EOF
             log "✅ .gitignore updated (OpenAI Codex + Cursor IDE)"
         else

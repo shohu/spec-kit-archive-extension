@@ -41,8 +41,8 @@ cd spec-kit-archive-extension
 
 The installer automatically sets up:
 - ✅ Archive scripts in `.specify/scripts/bash/archive/`
-- ✅ AI prompts for **Cursor IDE** (`.cursor/prompts/`) and **OpenAI Codex** (`.codex/prompts/`)
-- ✅ `.gitignore` rules to track prompts while ignoring other AI artifacts
+- ✅ AI commands for **Cursor IDE** (`.cursor/commands/`) and **OpenAI Codex** (`.codex/prompts/`)
+- ✅ `.gitignore` rules to track commands while ignoring other AI artifacts
 
 ### Supported AI Environments
 

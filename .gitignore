@@ -22,7 +22,7 @@ specs/archive/
 
 
 
-# Note: AI editor prompts are tracked
+# Note: AI editor commands are tracked
 # .codex/prompts/speckit.archive.md
-# .cursor/prompts/speckit.archive.md
+# .cursor/commands/speckit.archive.md
 
