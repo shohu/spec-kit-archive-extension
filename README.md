@@ -42,7 +42,7 @@ cd spec-kit-archive-extension
 The installer automatically sets up:
 - ✅ Archive scripts in `.specify/scripts/bash/archive/`
 - ✅ AI commands for **Cursor IDE** (`.cursor/commands/`) and **OpenAI Codex** (`.codex/prompts/`)
-- ✅ `.gitignore` rules to track commands while ignoring other AI artifacts
+- ✅ **Smart `.gitignore` configuration** (see Git Integration below)
 
 ### Supported AI Environments
 
@@ -165,6 +165,53 @@ After archiving with intelligent merge:
   - 9 functional requirements (no duplicates)
   - 5 success criteria (comprehensive metrics)
 - Information loss: **0 items**
+
+## 🔄 Git Integration
+
+### What Gets Tracked?
+
+The installer automatically configures `.gitignore` to track essential files while excluding development artifacts:
+
+**✅ Tracked (committed to your repository)**:
+- **Core scripts**: `.specify/scripts/bash/archive/core/` - Archive and merge functionality
+- **Configuration**: `.specify/scripts/bash/archive/config/` - Merge rules and settings
+- **AI commands**: `.cursor/commands/`, `.codex/prompts/` - Team-shared AI tools
+
+**❌ Ignored (not committed)** - Whitelist approach:
+```gitignore
+# Everything else in archive/ is automatically ignored:
+.specify/scripts/bash/archive/*
+!.specify/scripts/bash/archive/core/      # Only track core
+!.specify/scripts/bash/archive/config/    # Only track config
+```
+
+This includes: `README.md`, `LICENSE`, `TESTING.md`, `test-archive.sh`, `docs/`, `examples/`
+
+### Why This Approach?
+
+**Best Practice Rationale**:
+1. **Core scripts = dependencies**: Like npm packages, version-controlled for consistency
+2. **AI commands = team tools**: Shared across the team for standardized workflows
+3. **Documentation = external**: Avoid confusion with project docs
+4. **Test files = dev-only**: Not needed in production
+
+### Manual Override
+
+If you want different behavior, edit `.gitignore` after installation:
+
+```bash
+# To track documentation as well:
+!.specify/scripts/bash/archive/README.md
+!.specify/scripts/bash/archive/TESTING.md
+
+# To track only config (ignore core scripts):
+# Remove the core exception line:
+# !.specify/scripts/bash/archive/core/
+
+# To track everything (not recommended):
+# Remove the whitelist pattern:
+# .specify/scripts/bash/archive/*
+```
 
 ## 🛠 Advanced Features
 

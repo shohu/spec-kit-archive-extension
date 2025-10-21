@@ -152,13 +152,16 @@ update_gitignore() {
     local gitignore="$target/.gitignore"
     
     if [[ -f "$gitignore" ]]; then
-        # Check if .codex rules exist
-        if ! grep -q "^\.codex/\*" "$gitignore" 2>/dev/null; then
-            log "Adding AI environment ignore rules to .gitignore"
+        # Check if spec-kit-archive rules exist
+        if ! grep -q "^# Spec-Kit Archive Extension" "$gitignore" 2>/dev/null; then
+            log "Adding Spec-Kit Archive Extension ignore rules to .gitignore"
             cat >> "$gitignore" <<'EOF'
 
-# Spec-Kit AI commands (OpenAI Codex & Cursor IDE)
-# Track commands, ignore other artifacts
+# Spec-Kit Archive Extension
+# Track: core scripts, config, AI commands
+# Ignore: documentation, test files, meta files
+
+# AI commands (track for team collaboration)
 .codex/*
 !.codex/prompts/
 .codex/prompts/*
@@ -168,10 +171,15 @@ update_gitignore() {
 !.cursor/commands/
 .cursor/commands/*
 !.cursor/commands/speckit.archive.md
+
+# Archive scripts (whitelist approach - track only core and config)
+.specify/scripts/bash/archive/*
+!.specify/scripts/bash/archive/core/
+!.specify/scripts/bash/archive/config/
 EOF
-            log "✅ .gitignore updated (OpenAI Codex + Cursor IDE)"
+            log "✅ .gitignore updated (Spec-Kit Archive Extension)"
         else
-            log "✅ .gitignore already configured"
+            log "✅ .gitignore already configured for Spec-Kit Archive Extension"
         fi
     fi
 }
