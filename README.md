@@ -48,9 +48,8 @@ The installer automatically sets up:
 
 | Environment | Model | Optimized For |
 |-------------|-------|---------------|
-| **Cursor IDE** | GPT-5-Codex / Claude Sonnet 3.5 / GPT-4o | Parallel tool execution, IDE integration |
-| **OpenAI Codex** | **GPT-5-Codex** (2025) | Autonomous operation, deep code analysis |
-| **GitHub Copilot** | GPT-4 / GPT-5-Codex | GitHub integration, PR workflows |
+| **Cursor** | GPT-5 / Claude Sonnet 4.5 | Parallel tool execution, IDE integration |
+| **Codex** | **GPT-5-Codex** (2025) | Autonomous operation, deep code analysis |
 
 ### Usage
 
