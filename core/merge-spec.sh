@@ -334,7 +334,7 @@ merge_by_id() {
     echo ""
     
     # Collect IDs from both files
-    declare -A seen_ids
+    declare -A seen_ids=()
     
     # Output incoming items first (they override base)
     while IFS= read -r line; do
@@ -363,7 +363,8 @@ merge_by_id() {
             fi
         else
             # Non-ID line, output if no ID context yet
-            if [[ ${#seen_ids[@]} -eq 0 ]]; then
+            local id_count=${#seen_ids[@]}
+            if [[ $id_count -eq 0 ]]; then
                 echo "$line"
             fi
         fi
