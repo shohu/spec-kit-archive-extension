@@ -85,9 +85,13 @@ install_archive_system() {
     # Copy archive directory
     if [[ -d "$SCRIPT_DIR" ]]; then
         # Local installation (from cloned repo)
-        cp -r "$SCRIPT_DIR" "$archive_dest"
-        # Remove install.sh from destination (meta-script)
-        rm -f "$archive_dest/install.sh"
+        mkdir -p "$archive_dest"
+        
+        # Copy files and directories, excluding .git and install.sh
+        cd "$SCRIPT_DIR"
+        find . -maxdepth 1 ! -name '.' ! -name '.git' ! -name 'install.sh' ! -name 'README_ARCHIVE.md' -exec cp -r {} "$archive_dest/" \;
+        
+        cd - >/dev/null
     else
         error "Archive source directory not found: $SCRIPT_DIR"
     fi
