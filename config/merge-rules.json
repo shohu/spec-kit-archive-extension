@@ -1,133 +1,132 @@
 {
   "rules": {
-    "背景と目的": {
+    "Background and Purpose": {
       "strategy": "latest_with_context",
-      "reason": "最新の目的を優先するが、中核原則への言及は保持"
+      "reason": "Prioritize latest purpose while preserving references to core principles"
     },
-    "ユーザシナリオとテスト": {
+    "User Scenarios and Tests": {
       "strategy": "accumulate",
-      "reason": "各ストーリーは憲章の異なるステージ（探索・配合・都市・戦利品）に対応するため累積"
+      "reason": "Each story represents different workflow stages, accumulate for complete coverage"
     },
-    "ユーザーストーリー": {
+    "User Stories": {
       "strategy": "accumulate",
-      "reason": "ユーザシナリオとテストの別名パターン"
+      "reason": "Alternative naming pattern for User Scenarios and Tests"
     },
-    "要件": {
+    "Requirements": {
       "strategy": "merge_by_id",
       "id_pattern": "^- \\*\\*(FR|NFR)-(\\d+)",
-      "reason": "機能要件は憲章原則の具体化であり、ID単位で管理"
+      "reason": "Functional requirements embody constitution principles, managed by ID"
     },
-    "機能要件": {
+    "Functional Requirements": {
       "strategy": "merge_by_id",
       "id_pattern": "^- \\*\\*(FR)-(\\d+)",
-      "reason": "要件セクションのサブセクション"
+      "reason": "Subsection of Requirements"
     },
-    "非機能要件": {
+    "Non-Functional Requirements": {
       "strategy": "merge_by_id",
       "id_pattern": "^- \\*\\*(NFR)-(\\d+)",
-      "reason": "要件セクションのサブセクション"
+      "reason": "Subsection of Requirements"
     },
-    "主要エンティティ": {
+    "Key Entities": {
       "strategy": "merge_entities",
-      "reason": "同名エンティティは定義をマージ、新規エンティティは追加"
+      "reason": "Same-named entities merge definitions, new entities are added"
     },
-    "受け入れ基準": {
+    "Acceptance Criteria": {
       "strategy": "merge_by_id",
       "id_pattern": "^- \\*\\*(AC)-(\\d+)",
-      "reason": "受け入れ基準はユーザーストーリーの検証条件"
+      "reason": "Acceptance criteria validate user stories"
     },
-    "成功指標": {
+    "Success Criteria": {
       "strategy": "accumulate_unique",
       "id_pattern": "^- \\*\\*(SC)-(\\d+)",
-      "reason": "憲章の60分ループ目標を複数角度で測定"
+      "reason": "Multiple measurement angles for comprehensive evaluation"
     },
-    "測定可能な成果": {
+    "Measurable Outcomes": {
       "strategy": "accumulate_unique",
       "id_pattern": "^- \\*\\*(SC)-(\\d+)",
-      "reason": "成功指標セクションのサブセクション"
+      "reason": "Subsection of Success Criteria"
     },
-    "テレメトリ計画": {
+    "Telemetry Plan": {
       "strategy": "accumulate",
-      "reason": "計測項目は累積して全体像を把握"
+      "reason": "Accumulate metrics to understand the complete picture"
     },
-    "想定と依存関係": {
+    "Assumptions and Dependencies": {
       "strategy": "accumulate",
-      "reason": "前提条件は累積して整合性を保つ"
+      "reason": "Accumulate prerequisites to maintain consistency"
     },
-    "前提と仮定": {
+    "Assumptions and Constraints": {
       "strategy": "accumulate",
-      "reason": "想定と依存関係の別名パターン"
+      "reason": "Alternative naming for Assumptions and Dependencies"
     },
-    "スコープ外と制約": {
+    "Out of Scope and Constraints": {
       "strategy": "accumulate",
-      "reason": "制約事項は累積して範囲を明確化"
+      "reason": "Accumulate constraints to clarify boundaries"
     },
-    "エッジケース": {
+    "Edge Cases": {
       "strategy": "accumulate",
-      "reason": "例外処理は累積して網羅性を高める"
+      "reason": "Accumulate exception handling for comprehensive coverage"
     },
-    "サマリ": {
+    "Summary": {
       "strategy": "latest",
-      "reason": "plan.md: 最新機能の概要を優先"
+      "reason": "plan.md: Prioritize latest feature overview"
     },
-    "技術コンテキスト": {
+    "Technical Context": {
       "strategy": "accumulate",
-      "reason": "plan.md: 技術スタックの履歴を保持"
+      "reason": "plan.md: Preserve technical stack history"
     },
-    "憲章チェック": {
+    "Constitution Check": {
       "strategy": "accumulate",
-      "reason": "plan.md: 各フェーズの憲章準拠チェックを累積"
+      "reason": "plan.md: Accumulate constitution compliance checks for each phase"
     },
-    "プロジェクト構造": {
+    "Project Structure": {
       "strategy": "latest",
-      "reason": "plan.md: 最新のディレクトリ構造を反映"
+      "reason": "plan.md: Reflect latest directory structure"
     },
-    "アーキテクチャ概要": {
+    "Architecture Overview": {
       "strategy": "latest",
-      "reason": "plan.md: 最新のアーキテクチャ設計を優先"
+      "reason": "plan.md: Prioritize latest architecture design"
     },
-    "データフロー": {
+    "Data Flow": {
       "strategy": "latest",
-      "reason": "plan.md: 最新のデータフロー図を優先"
+      "reason": "plan.md: Prioritize latest data flow diagram"
     },
-    "パフォーマンスと計測": {
+    "Performance and Metrics": {
       "strategy": "accumulate",
-      "reason": "plan.md: 計測項目は累積して全体を把握"
+      "reason": "plan.md: Accumulate metrics to understand the whole"
     },
-    "リスクと対応": {
+    "Risks and Mitigation": {
       "strategy": "accumulate",
-      "reason": "plan.md: リスクは累積して網羅性を高める"
+      "reason": "plan.md: Accumulate risks for comprehensive coverage"
     },
-    "フェーズ計画": {
+    "Phase Plan": {
       "strategy": "latest",
-      "reason": "plan.md: 最新のフェーズ計画を優先"
+      "reason": "plan.md: Prioritize latest phase plan"
     },
-    "複雑性トラッキング": {
+    "Complexity Tracking": {
       "strategy": "accumulate",
-      "reason": "plan.md: 複雑性指標は累積して推移を追跡"
+      "reason": "plan.md: Accumulate complexity metrics to track trends"
     },
-    "仕様・計画整合レビュー": {
+    "Spec-Plan Alignment Review": {
       "strategy": "latest",
-      "reason": "plan.md: 最新のレビュー結果を優先"
+      "reason": "plan.md: Prioritize latest review results"
     },
-    "依存関係と実行順序": {
+    "Dependencies and Execution Order": {
       "strategy": "accumulate",
-      "reason": "tasks.md: 依存関係は累積して全体の制約を把握"
+      "reason": "tasks.md: Accumulate dependencies to understand overall constraints"
     },
-    "実行方針": {
+    "Execution Strategy": {
       "strategy": "latest",
-      "reason": "tasks.md: 最新の実行戦略を優先"
+      "reason": "tasks.md: Prioritize latest execution strategy"
     }
   },
-  "phase_pattern": "^##\\s*フェーズ\\d+:",
+  "phase_pattern": "^##\\s*Phase\\s*\\d+:",
   "entity_pattern": "^##\\s*[A-Z][a-zA-Z]+$",
   "default_strategy": "latest",
   "constitution_principles": [
-    "一時間コアループ",
-    "探索が世界を拡張する",
-    "血統戦略の深化",
-    "移動が都市を育てる",
-    "戦利品が経済を回す"
+    "Core Principle 1",
+    "Core Principle 2",
+    "Core Principle 3",
+    "Core Principle 4",
+    "Core Principle 5"
   ]
 }
-

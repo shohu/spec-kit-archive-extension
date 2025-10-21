@@ -1,42 +1,41 @@
 {
-  "_comment": "カスタムマージルールのサンプル",
-  "_description": "プロジェクト固有のセクションマージ戦略を定義できます",
+  "_comment": "Custom merge rules example",
+  "_description": "Define project-specific section merge strategies",
   
   "rules": {
-    "背景と目的": {
+    "Background and Purpose": {
       "strategy": "latest_with_context",
-      "reason": "最新の目的を優先するが、中核原則への言及は保持"
+      "reason": "Prioritize latest purpose while preserving core principle references"
     },
-    "ユーザシナリオとテスト": {
+    "User Scenarios and Tests": {
       "strategy": "accumulate",
-      "reason": "各ストーリーは憲章の異なるステージに対応するため累積"
+      "reason": "Each story corresponds to different stages, accumulate for coverage"
     },
-    "要件": {
+    "Requirements": {
       "strategy": "merge_by_id",
       "id_pattern": "^- \\*\\*(FR|NFR)-(\\d+)",
-      "reason": "機能要件は憲章原則の具体化であり、ID単位で管理"
+      "reason": "Functional requirements embody constitution principles, managed by ID"
     },
     
-    "_comment_custom": "以下、カスタムセクション例",
+    "_comment_custom": "Custom section examples below",
     
-    "実装ノート": {
+    "Implementation Notes": {
       "strategy": "accumulate",
-      "reason": "カスタムセクション: 実装の歴史を累積"
+      "reason": "Custom section: Accumulate implementation history"
     },
-    "パフォーマンス計測": {
+    "Performance Measurements": {
       "strategy": "latest",
-      "reason": "カスタムセクション: 最新の計測結果のみ保持"
+      "reason": "Custom section: Keep only latest measurement results"
     }
   },
   
-  "phase_pattern": "^##\\s*フェーズ\\d+:",
+  "phase_pattern": "^##\\s*Phase\\s*\\d+:",
   "entity_pattern": "^##\\s*[A-Z][a-zA-Z]+$",
   "default_strategy": "latest",
   
   "constitution_principles": [
-    "プロジェクト固有の原則1",
-    "プロジェクト固有の原則2",
-    "プロジェクト固有の原則3"
+    "Your Project Principle 1",
+    "Your Project Principle 2",
+    "Your Project Principle 3"
   ]
 }
-

@@ -74,4 +74,88 @@ Strategies: `accumulate`, `merge_by_id`, `accumulate_unique`, `merge_entities`, 
   --base specs/latest/spec.md \
   --incoming specs/002-feature/spec.md \
   --output /tmp/test.md
+
+# Review the result
+diff -u specs/latest/spec.md /tmp/test.md
 ```
+
+## Verification Examples
+
+```bash
+# Check user story count (should accumulate)
+grep -c "^### " specs/latest/spec.md
+
+# Check requirement IDs (should merge by ID)
+grep "^- \*\*FR-" specs/latest/spec.md
+
+# Check phases (should accumulate)
+grep "^## Phase" specs/latest/tasks.md
+```
+
+## Testing
+
+```bash
+# Test all file types
+for file in spec plan tasks data-model; do
+  echo "=== Testing $file.md ==="
+  .specify/scripts/bash/archive/core/merge-spec.sh \
+    --base specs/archive/001-core/$file.md \
+    --incoming specs/002-feature/$file.md \
+    --output /tmp/test-$file.md
+  echo "Lines: $(wc -l < /tmp/test-$file.md)"
+done
+```
+
+## Troubleshooting
+
+### Q: Merge result is different than expected
+
+**A**: Check the following:
+
+1. Strategy definitions in `config/merge-rules.json`
+2. Exact section name matching (check for extra spaces, special characters)
+3. Use dry run to test: `/tmp/test-merged-*.md`
+
+```bash
+# Dry run test
+.specify/scripts/bash/archive/core/merge-spec.sh \
+  --base specs/latest/spec.md \
+  --incoming specs/002-feature/spec.md \
+  --output /tmp/test-spec.md
+
+# Review result
+diff -u specs/latest/spec.md /tmp/test-spec.md
+```
+
+### Q: Specific section disappeared
+
+**A**: Section names might not match exactly.
+
+```bash
+# Check section names
+grep "^##" specs/latest/spec.md
+grep "^##" specs/002-feature/spec.md
+```
+
+### Q: Entities are duplicated
+
+**A**: Ensure entity names in data-model.md start with uppercase letters and follow naming conventions (e.g., `Player`, `GameState`, `Resource`).
+
+## AI Command Usage
+
+With Cursor or Codex AI editors:
+
+```
+# Archive specific feature
+/speckit.archive 002-my-feature
+
+# Auto-detect most recent feature
+/speckit.archive
+```
+
+The AI will:
+1. Auto-detect the feature if not specified
+2. Run validation checks
+3. Execute the archive script
+4. Show a formatted summary
+5. Suggest next steps

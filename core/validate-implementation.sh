@@ -76,7 +76,8 @@ check_user_stories() {
     fi
     
     # Extract user story priorities (P1, P2, P3)
-    local p1_stories=$(grep -c "優先度: P1" "$SPEC_FILE" || echo "0")
+    # Support multiple priority formats: "Priority: P1", "優先度: P1", "**Priority**: P1"
+    local p1_stories=$(grep -ciE "(Priority|優先度):[[:space:]]*P1" "$SPEC_FILE" || echo "0")
     
     # Check if tests exist
     if [[ ! -d "$REPO_ROOT/tests" ]]; then

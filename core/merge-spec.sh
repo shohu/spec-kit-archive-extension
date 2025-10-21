@@ -139,8 +139,15 @@ get_merge_strategy() {
     local section_name="$1"
     
     # Check for pattern-based rules first
-    # Phase pattern (tasks.md): フェーズN: ...
-    if [[ "$section_name" =~ ^フェーズ[0-9]+: ]]; then
+    # Phase pattern (tasks.md): Phase N: ... (reads from merge-rules.json if available)
+    local phase_pattern=$(jq -r '.phase_pattern // "^##\\s*Phase\\s*\\d+:"' "$SCRIPT_DIR/../config/merge-rules.json" 2>/dev/null)
+    if [[ -n "$phase_pattern" && "$section_name" =~ $phase_pattern ]]; then
+        echo "accumulate"
+        return
+    fi
+    
+    # Fallback: support both English "Phase" and other language patterns
+    if [[ "$section_name" =~ ^Phase[[:space:]]*[0-9]+: ]] || [[ "$section_name" =~ ^フェーズ[0-9]+: ]]; then
         echo "accumulate"
         return
     fi

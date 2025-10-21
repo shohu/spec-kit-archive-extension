@@ -19,11 +19,11 @@
 
 ### Proven in Production
 
-Successfully deployed in **Atlas Alchemy** project:
-- ✅ 8 user stories (4+4) accumulated
-- ✅ 9 functional requirements (FR-001~009) merged by ID
-- ✅ 5 success criteria (SC-001~005) preserved
-- ✅ Zero information loss across 002 feature archives
+Successfully deployed in production projects:
+- ✅ User stories accumulated across features
+- ✅ Functional requirements merged by ID (FR-001~009, etc.)
+- ✅ Success criteria preserved (SC-001~005, etc.)
+- ✅ Zero information loss across multiple feature archives
 
 ## 🚀 Quick Start
 
@@ -141,11 +141,11 @@ Available strategies:
 
 ## 📊 Real-World Results
 
-**Atlas Alchemy** (Strategy/Simulation Game):
+**Production Project Example** (Strategy/Simulation Game):
 
 Before archiving:
-- `specs/001-core-game-architecture/` (157 lines)
-- `specs/002-core-loop-synergy/` (126 lines)
+- `specs/001-core-architecture/` (157 lines)
+- `specs/002-feature-enhancement/` (126 lines)
 
 After archiving with intelligent merge:
 - `specs/latest/spec.md` (291 lines) ✅
@@ -190,7 +190,6 @@ diff -u specs/latest/spec.md /tmp/test-spec.md
 - [Usage Guide](docs/usage.md)
 - [Constitution Setup](docs/constitution-guide.md)
 - [Architecture Details](docs/architecture.md)
-- [Contributing](CONTRIBUTING.md)
 
 ## 🗺 Roadmap
 
@@ -198,7 +197,7 @@ diff -u specs/latest/spec.md /tmp/test-spec.md
 - ✅ Core merge functionality
 - ✅ Constitution-driven strategies
 - ✅ Implementation validation
-- ✅ Atlas Alchemy production use
+- ✅ Production-tested
 
 ### Planned (v0.2.0)
 - [ ] Remote installation support
@@ -207,39 +206,16 @@ diff -u specs/latest/spec.md /tmp/test-spec.md
 - [ ] GitHub Actions integration
 
 ### Future (v1.0.0)
-- [ ] Integration into spec-kit core
-- [ ] Official `/speckit.archive` command
+- [ ] Potential proposal for spec-kit integration
+- [ ] Enhanced AI prompts
 - [ ] Community-driven merge strategies
-
-## 🤝 Contributing
-
-We welcome contributions! This extension is being developed with the goal of eventual integration into [spec-kit](https://github.com/context7-labs/spec-kit) core.
-
-**How to contribute**:
-1. Test in your projects and report issues
-2. Suggest merge strategies for your use cases
-3. Improve documentation
-4. Share your constitution.md examples
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## 🙏 Acknowledgments
-
-- **Spec-Kit Team** for the excellent specification-driven development framework
-- **Atlas Alchemy Project** for being the proving ground
-- **Community Contributors** for feedback and suggestions
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/spec-kit-archive-extension/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/spec-kit-archive-extension/discussions)
-- **Spec-Kit Community**: [context7-labs/spec-kit](https://github.com/context7-labs/spec-kit)
 
 ---
 
-**Note**: This extension is an independent project and is not officially affiliated with spec-kit. We are developing it with the goal of proposing integration into the official spec-kit toolkit.
+**Note**: This is an independent extension project and is not officially affiliated with spec-kit. It may be proposed for integration in the future, but currently operates as a standalone tool.
 
