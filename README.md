@@ -41,8 +41,16 @@ cd spec-kit-archive-extension
 
 The installer automatically sets up:
 - ✅ Archive scripts in `.specify/scripts/bash/archive/`
-- ✅ AI prompts for **Cursor** (`.cursor/prompts/`) and **Codex** (`.codex/prompts/`)
+- ✅ AI prompts for **Cursor IDE** (`.cursor/prompts/`) and **OpenAI Codex** (`.codex/prompts/`)
 - ✅ `.gitignore` rules to track prompts while ignoring other AI artifacts
+
+### Supported AI Environments
+
+| Environment | Model | Optimized For |
+|-------------|-------|---------------|
+| **Cursor IDE** | GPT-5-Codex / Claude Sonnet 3.5 / GPT-4o | Parallel tool execution, IDE integration |
+| **OpenAI Codex** | **GPT-5-Codex** (2025) | Autonomous operation, deep code analysis |
+| **GitHub Copilot** | GPT-4 / GPT-5-Codex | GitHub integration, PR workflows |
 
 ### Usage
 
@@ -55,16 +63,18 @@ The installer automatically sets up:
 .specify/scripts/bash/archive/core/archive-feature.sh --feature 002-my-feature --json
 ```
 
-**AI Command (Cursor/Codex)**:
+**AI Command (Cursor IDE / OpenAI Codex)**:
 ```
 # Archive specific feature
 /speckit.archive 002-my-feature
 
-# Auto-detect most recent feature
+# Auto-detect most recent feature (recommended)
 /speckit.archive
 ```
 
-Supports both **Cursor** and **Codex** AI editors out of the box.
+**Model Recommendations**:
+- **GPT-5**: Best for autonomous validation and complex merge decisions (74.5% SWE-bench success rate)
+- **Claude Sonnet 4.5**: Excellent for parallel processing and detailed analysis
 
 ## 📖 How It Works
 

@@ -12,6 +12,22 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 **Note**: The feature slug is **optional**. If the user provides an empty command (no arguments), you MUST auto-detect the most recent feature directory. Do not ask the user to provide it unless auto-detection fails.
 
+## Cursor IDE Execution Strategy
+
+**Multi-model support**: This prompt works with Claude Sonnet 4.5, GPT-4o, GPT-5, or other selected models.
+
+**Parallel tool execution**: Leverage Cursor's ability to call multiple tools simultaneously for validation and file reads.
+
+**IDE-integrated workflow**: Use specialized file tools (`read_file`, `list_dir`, `grep`) for better integration.
+
+**Error recovery**: If bash scripts fail, fall back to manual parsing using file tools.
+
+**Context retention**: Maintain all validation results and warnings across execution steps.
+
+**Recommended models**:
+- **GPT-5**: Best for complex validation and autonomous merge decisions
+- **Claude Sonnet 4.5**: Excellent for parallel processing and detailed analysis
+
 ## Outline
 
 1. **Determine feature slug** (auto-detection if not provided)
@@ -22,25 +38,30 @@ You **MUST** consider the user input before proceeding (if not empty).
      feature_slug=$(cd "$repo_root/specs" && ls -1d [0-9][0-9][0-9]-* 2>/dev/null | \
        grep -v '^latest$' | grep -v '^archive$' | sort -r | head -n1)
      ```
-   - If still no slug found → List available features in `specs/` and ERROR "No feature directories found"
+   - If still no slug found → Use `list_dir` tool to enumerate `specs/` and ERROR "No feature directories found"
    - Output for confirmation: "📦 Archiving feature: **{feature_slug}**"
 
-2. **Resolve paths**
+2. **Resolve and validate paths** (use parallel reads where possible)
    - Feature directory: `$repo_root/specs/$feature_slug`
    - If directory missing → ERROR "Feature directory not found"
+   - **Parallel validation**: Read `spec.md`, `plan.md`, `tasks.md` simultaneously to check completeness
 
 3. **Pre-flight checks (informational)**
    - **Tasks check**: Load `tasks.md` (if present) and detect any unchecked items `[ ]`
+     - Use `read_file` tool for reliable parsing
      - If items remain, warn user but continue (archiving may proceed if intentional)
    - **Implementation validation**: Run `.specify/scripts/bash/archive/core/validate-implementation.sh`
+     - Use `run_terminal_cmd` with proper error handling
      - Checks if spec.md user stories have tests
      - Checks if plan.md mentioned files exist
      - Checks if data-model.md entities exist in code
      - Warnings are informational only, do not block archiving
+   - **If validation script fails**: Fall back to manual grep-based checks
 
 4. **Run archive script**
    - Command (bash):\
      `(cd "$repo_root" && .specify/scripts/bash/archive/core/archive-feature.sh --json --feature "$feature_slug")`
+   - Use `run_terminal_cmd` tool with `explanation` describing the merge operation
    - Run **exactly once** per invocation
    - The script performs:
      - **Intelligent merge** using constitution-driven strategies:
@@ -51,13 +72,25 @@ You **MUST** consider the user input before proceeding (if not empty).
      - **Note**: `tasks.md` is NOT synced (tasks are completed at archive time)
      - Syncs `contracts/` directory
      - Moves feature to `specs/archive/$feature_slug`
-   - If command fails, surface stderr/stdout and stop
+   - **Error handling**: If command fails:
+     1. Capture and display stderr/stdout in full
+     2. Check if partial merge occurred (inspect `specs/latest/`)
+     3. Offer to retry or manual intervention steps
+     - Do NOT silently fail - always surface errors to user
 
 5. **Parse JSON output**
    - Expect keys: `archived_path`, `latest_path`, `synced_items`, `warnings`
    - Use absolute paths
+   - **If JSON parsing fails**: Fall back to reading output files directly with `read_file`
 
-6. **Summarize results**
+6. **Post-archive verification** (parallel reads)
+   - Read merged `specs/latest/spec.md` to count user stories
+   - Read merged `specs/latest/plan.md` to verify technical sections
+   - Read merged `specs/latest/data-model.md` to count entities
+   - List `specs/latest/contracts/` directory contents
+   - **Summarize changes** with concrete numbers and file paths
+
+7. **Summarize results**
    - Show archived location: `specs/archive/$feature_slug/`
    - List merged files in `specs/latest/`:
      - `spec.md` (user stories accumulated, requirements merged by ID)
@@ -67,7 +100,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Mention validation results if any
    - Note any remaining unchecked tasks (informational)
 
-7. **Next steps**
+8. **Next steps**
    - Recommend: `git status` to review changes
    - Recommend: `git add specs/archive/ specs/latest/` to stage changes
    - Suggest: Create next feature with `/speckit.specify` or review merged specs
@@ -107,7 +140,15 @@ Then show the main result:
 ```
 
 **Special cases**:
-- If no features found: List available directories in specs/ and ask user to create one
+- If no features found: Use `list_dir` to enumerate specs/ and ask user to create one
 - If multiple recent features: Show list and ask which one to archive
 - If archive script fails: Report the error with stderr/stdout and suggest fixes
+- If script missing: Offer to check installation or provide manual merge steps
 
+## Cursor-Specific Best Practices
+
+1. **Use specialized tools**: Prefer `read_file`, `list_dir`, `grep` over terminal commands for file operations
+2. **Batch operations**: When reading multiple files for verification, call all `read_file` in parallel
+3. **Error resilience**: If bash script fails, attempt manual parsing and merging using file tools
+4. **Verbose output**: Provide detailed explanations of each merge decision
+5. **Context awareness**: Reference previous validation results when summarizing

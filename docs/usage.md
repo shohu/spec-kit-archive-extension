@@ -143,19 +143,23 @@ grep "^##" specs/002-feature/spec.md
 
 ## AI Command Usage
 
-With Cursor or Codex AI editors:
+With **Cursor IDE** or **OpenAI Codex**:
 
 ```
 # Archive specific feature
 /speckit.archive 002-my-feature
 
-# Auto-detect most recent feature
+# Auto-detect most recent feature (recommended)
 /speckit.archive
 ```
 
+**Recommended Models**:
+- **GPT-5** (2025): Best for autonomous validation and complex merges (74.5% SWE-bench success rate)
+- **Claude Sonnet 4.5**: Excellent for parallel processing and detailed analysis
+
 The AI will:
 1. Auto-detect the feature if not specified
-2. Run validation checks
-3. Execute the archive script
-4. Show a formatted summary
-5. Suggest next steps
+2. Run comprehensive validation checks (using deep code analysis with GPT-5-Codex)
+3. Execute the archive script with intelligent merge strategies
+4. Show a formatted summary with concrete metrics
+5. Suggest next steps (git commands, next feature planning)

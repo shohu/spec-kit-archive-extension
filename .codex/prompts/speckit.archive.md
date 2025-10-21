@@ -12,102 +12,213 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 **Note**: The feature slug is **optional**. If the user provides an empty command (no arguments), you MUST auto-detect the most recent feature directory. Do not ask the user to provide it unless auto-detection fails.
 
-## Outline
+## GPT-5-Codex Execution Strategy
 
-1. **Determine feature slug** (auto-detection if not provided)
-   - Start in repo root: `repo_root=$(git rev-parse --show-toplevel)`
-   - Parse user input: `feature_slug=$(echo "$ARGUMENTS" | xargs | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')`
-   - **If empty or $ARGUMENTS is literally "$ARGUMENTS"**, auto-detect the most recent feature:
-     ```bash
-     feature_slug=$(cd "$repo_root/specs" && ls -1d [0-9][0-9][0-9]-* 2>/dev/null | \
-       grep -v '^latest$' | grep -v '^archive$' | sort -r | head -n1)
-     ```
-   - If still no slug found → List available features in `specs/` and ERROR "No feature directories found"
-   - Output for confirmation: "📦 Archiving feature: **{feature_slug}**"
+**Autonomous operation**: Leverage GPT-5-Codex's ability to work independently for extended periods (up to 7+ hours).
 
-2. **Resolve paths**
-   - Feature directory: `$repo_root/specs/$feature_slug`
-   - If directory missing → ERROR "Feature directory not found"
+**Dynamic reasoning**: Allow the model to adaptively decide when to use quick responses vs. deep analysis.
 
-3. **Pre-flight checks (informational)**
-   - **Tasks check**: Load `tasks.md` (if present) and detect any unchecked items `[ ]`
-     - If items remain, warn user but continue (archiving may proceed if intentional)
-   - **Implementation validation**: Run `.specify/scripts/bash/archive/core/validate-implementation.sh`
-     - Checks if spec.md user stories have tests
-     - Checks if plan.md mentioned files exist
-     - Checks if data-model.md entities exist in code
-     - Warnings are informational only, do not block archiving
+**High-precision validation**: Utilize the 74.5% SWE-bench success rate for accurate implementation checks.
 
-4. **Run archive script**
-   - Command (bash):\
-     `(cd "$repo_root" && .specify/scripts/bash/archive/core/archive-feature.sh --json --feature "$feature_slug")`
-   - Run **exactly once** per invocation
-   - The script performs:
-     - **Intelligent merge** using constitution-driven strategies:
-       - `spec.md`: Accumulates user stories, merges requirements by ID
-       - `plan.md`: Accumulates technical context and risks, uses latest architecture
-       - `data-model.md`: Merges entities intelligently
-       - `quickstart.md`, `research.md`: Simple updates
-     - **Note**: `tasks.md` is NOT synced (tasks are completed at archive time)
-     - Syncs `contracts/` directory
-     - Moves feature to `specs/archive/$feature_slug`
-   - If command fails, surface stderr/stdout and stop
+**Structured workflow**: Follow clear steps but enable autonomous decision-making within each step.
 
-5. **Parse JSON output**
-   - Expect keys: `archived_path`, `latest_path`, `synced_items`, `warnings`
-   - Use absolute paths
+**Code-aware context**: Leverage deep codebase understanding for validation and merge decisions.
 
-6. **Summarize results**
-   - Show archived location: `specs/archive/$feature_slug/`
-   - List merged files in `specs/latest/`:
-     - `spec.md` (user stories accumulated, requirements merged by ID)
-     - `plan.md` (technical info merged)
-     - `data-model.md` (entities merged)
-     - `contracts/` (synced)
-   - Mention validation results if any
-   - Note any remaining unchecked tasks (informational)
+## Step-by-Step Execution
 
-7. **Next steps**
-   - Recommend: `git status` to review changes
-   - Recommend: `git add specs/archive/ specs/latest/` to stage changes
-   - Suggest: Create next feature with `/speckit.specify` or review merged specs
-   - Optional: Run `/speckit.plan` for the next feature
+### Step 1: Determine Feature Slug
 
-## Response Format
-
-Start with feature detection confirmation (if auto-detected):
-```
-📦 Auto-detected feature: <feature-slug>
+**Auto-detection logic**:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root/specs"
+feature_slug=$(ls -1d [0-9][0-9][0-9]-* 2>/dev/null | grep -v '^latest$' | grep -v '^archive$' | sort -r | head -n1)
 ```
 
-Then show the main result:
+**Manual input**: If `$ARGUMENTS` is provided and not empty, use it as `feature_slug`.
+
+**Validation**: Check if `$repo_root/specs/$feature_slug` exists.
+
+**Output**: "📦 Archiving feature: **{feature_slug}**"
+
+**Checkpoint**: ✅ Feature identified
+
+---
+
+### Step 2: Validate Feature Directory
+
+**Command**:
+```bash
+cd "$repo_root/specs/$feature_slug"
+ls -la
 ```
-✅ Archived feature: <feature slug>
+
+**Check for required files**:
+- `spec.md` (required)
+- `plan.md` (recommended)
+- `tasks.md` (optional)
+
+**Checkpoint**: ✅ Feature directory validated
+
+---
+
+### Step 3: Check Task Completion (Informational)
+
+**Command**:
+```bash
+if [ -f "$repo_root/specs/$feature_slug/tasks.md" ]; then
+  grep -c '\[ \]' "$repo_root/specs/$feature_slug/tasks.md" || echo "0"
+fi
+```
+
+**Output**: Report number of unchecked tasks (if any).
+
+**Action**: Warn if tasks remain, but continue archiving.
+
+**Checkpoint**: ✅ Tasks reviewed
+
+---
+
+### Step 4: Run Validation Script (Informational)
+
+**Command**:
+```bash
+cd "$repo_root"
+.specify/scripts/bash/archive/core/validate-implementation.sh "$feature_slug"
+```
+
+**Expected checks**:
+- User stories have corresponding tests
+- Plan.md mentioned files exist
+- Data model entities exist in code
+
+**Output**: Display warnings if any (non-blocking).
+
+**Checkpoint**: ✅ Validation complete
+
+---
+
+### Step 5: Execute Archive Script
+
+**Command**:
+```bash
+cd "$repo_root"
+.specify/scripts/bash/archive/core/archive-feature.sh --json --feature "$feature_slug"
+```
+
+**Script behavior**:
+1. Merges feature specs into `specs/latest/`:
+   - `spec.md`: Accumulates user stories, merges requirements by ID
+   - `plan.md`: Accumulates technical context, uses latest architecture
+   - `data-model.md`: Merges entities intelligently
+   - `contracts/`: Syncs directory
+2. Moves feature to `specs/archive/$feature_slug`
+3. Outputs JSON summary
+
+**Error handling**: If script fails, display full error and stop.
+
+**Checkpoint**: ✅ Archive complete
+
+---
+
+### Step 6: Parse Script Output
+
+**Expected JSON structure**:
+```json
+{
+  "archived_path": "specs/archive/XXX-feature-name/",
+  "latest_path": "specs/latest/",
+  "synced_items": ["spec.md", "plan.md", "data-model.md", "contracts/"],
+  "warnings": []
+}
+```
+
+**Action**: Extract key information for summary.
+
+**Checkpoint**: ✅ Output parsed
+
+---
+
+### Step 7: Verify Merged Files
+
+**Commands**:
+```bash
+cd "$repo_root/specs/latest"
+wc -l spec.md plan.md data-model.md
+ls -la contracts/
+```
+
+**Output**: Show file sizes and contract count.
+
+**Checkpoint**: ✅ Merge verified
+
+---
+
+### Step 8: Generate Summary
+
+**Format**:
+```
+✅ Archived feature: {feature-slug}
 
 📦 Archive location:
-   specs/archive/<feature-slug>/
+   specs/archive/{feature-slug}/
 
 📝 Merged to specs/latest/:
-   - spec.md (N user stories, M requirements)
-   - plan.md (technical context updated)
-   - data-model.md (N entities)
-   - contracts/ (synced)
+   - spec.md (N lines)
+   - plan.md (N lines)
+   - data-model.md (N lines)
+   - contracts/ (N files)
 
 🔍 Validation:
-   <validation results or "All checks passed">
+   {results or "All checks passed"}
 
 ⚠️  Warnings:
-   <if any outstanding tasks or validation warnings, or "None">
+   {warnings or "None"}
 
 📌 Next steps:
    1. Review: git status
    2. Stage: git add specs/archive/ specs/latest/
-   3. Commit: git commit -m "feat: archive <feature-slug>"
+   3. Commit: git commit -m "feat: archive {feature-slug}"
    4. Continue: /speckit.specify (for next feature)
 ```
 
-**Special cases**:
-- If no features found: List available directories in specs/ and ask user to create one
-- If multiple recent features: Show list and ask which one to archive
-- If archive script fails: Report the error with stderr/stdout and suggest fixes
+**Checkpoint**: ✅ Summary complete
 
+---
+
+## Error Handling
+
+### No Feature Found
+**Action**: List available features in `specs/` and ask user to specify one.
+
+### Feature Directory Missing
+**Action**: Display error and stop. Suggest checking `specs/` directory.
+
+### Archive Script Fails
+**Action**:
+1. Display stderr and stdout in full
+2. Check if `.specify/scripts/bash/archive/` exists
+3. Suggest running install script if missing
+4. Stop execution - do not proceed with partial archive
+
+### JSON Parse Error
+**Action**: Display raw output and attempt manual parsing of created files.
+
+---
+
+## GPT-5-Codex Best Practices
+
+1. **Autonomous validation**: Independently verify spec-code alignment using deep codebase analysis
+2. **Intelligent merge decisions**: Apply dynamic reasoning to resolve conflicts and edge cases
+3. **Comprehensive testing**: Automatically check user story coverage, file existence, and entity alignment
+4. **Adaptive execution**: Use quick validation for simple checks, deep analysis for complex merges
+5. **Code-aware context**: Reference actual implementation when making merge decisions
+6. **Proactive error recovery**: Detect and fix issues without requiring user intervention
+7. **Structured reporting**: Provide detailed but concise summaries with concrete metrics
+
+## GPT-5-Codex Advantages for This Task
+
+- **Extended operation**: Can handle large spec merges without timeout
+- **Code understanding**: Deep analysis of implementation vs. specification alignment
+- **Pattern recognition**: Identifies merge conflicts and proposes intelligent resolutions
+- **Validation depth**: Cross-references specs, plans, code, and tests simultaneously

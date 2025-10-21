@@ -104,24 +104,24 @@ install_prompt() {
     
     log "Installing AI prompts..."
     
-    # Install for Codex
+    # Install for OpenAI Codex (GPT-5-Codex optimized)
     local codex_dest="$target/.codex/prompts"
     mkdir -p "$codex_dest"
     
     if [[ -f "$SCRIPT_DIR/.codex/prompts/speckit.archive.md" ]]; then
         cp "$SCRIPT_DIR/.codex/prompts/speckit.archive.md" "$codex_dest/"
-        log "✅ Codex prompt installed (.codex/prompts/)"
+        log "✅ OpenAI Codex prompt installed (.codex/prompts/) - GPT-5-Codex optimized"
     else
         log "⚠️  Codex prompt not found"
     fi
     
-    # Install for Cursor
+    # Install for Cursor IDE (Multi-model support)
     local cursor_dest="$target/.cursor/prompts"
     mkdir -p "$cursor_dest"
     
     if [[ -f "$SCRIPT_DIR/.cursor/prompts/speckit.archive.md" ]]; then
         cp "$SCRIPT_DIR/.cursor/prompts/speckit.archive.md" "$cursor_dest/"
-        log "✅ Cursor prompt installed (.cursor/prompts/)"
+        log "✅ Cursor IDE prompt installed (.cursor/prompts/) - Multi-model support"
     else
         log "⚠️  Cursor prompt not found"
     fi
@@ -154,10 +154,11 @@ update_gitignore() {
     if [[ -f "$gitignore" ]]; then
         # Check if .codex rules exist
         if ! grep -q "^\.codex/\*" "$gitignore" 2>/dev/null; then
-            log "Adding AI editor ignore rules to .gitignore"
+            log "Adding AI environment ignore rules to .gitignore"
             cat >> "$gitignore" <<'EOF'
 
-# Spec-Kit tooling artifacts (AI editor prompts)
+# Spec-Kit AI prompts (OpenAI Codex & Cursor IDE)
+# Track prompts, ignore other artifacts
 .codex/*
 !.codex/prompts/
 .codex/prompts/*
@@ -168,7 +169,7 @@ update_gitignore() {
 .cursor/prompts/*
 !.cursor/prompts/speckit.archive.md
 EOF
-            log "✅ .gitignore updated (Codex + Cursor)"
+            log "✅ .gitignore updated (OpenAI Codex + Cursor IDE)"
         else
             log "✅ .gitignore already configured"
         fi
