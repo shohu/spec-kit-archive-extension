@@ -1,0 +1,1 @@
+../../../../../core/merge-spec.sh

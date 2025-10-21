@@ -1,0 +1,1 @@
+../../../../../core/parse-markdown-sections.awk
