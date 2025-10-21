@@ -4,6 +4,7 @@ set -euo pipefail
 
 JSON_MODE=false
 FEATURE_SLUG=""
+WITH_MERGE=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -19,9 +20,13 @@ while [[ $# -gt 0 ]]; do
             FEATURE_SLUG="$2"
             shift 2
             ;;
+        --with-merge)
+            WITH_MERGE=true
+            shift
+            ;;
         --help|-h)
             cat <<'EOF'
-Usage: archive-feature.sh [--json] --feature <feature-directory>
+Usage: archive-feature.sh [--json] --feature <feature-directory> [--with-merge]
 
 Moves a completed feature spec from specs/<feature> into specs/archive/<feature>
 and synchronises relevant documents into specs/latest/.
@@ -29,7 +34,12 @@ and synchronises relevant documents into specs/latest/.
 Options:
   --feature <dir>   Required. Name of the feature directory (e.g. 002-specify-scripts-bash)
   --json            Emit machine-readable JSON summary
+  --with-merge      Prompt to merge current branch into parent branch after archiving
   --help, -h        Show this help
+
+Git Integration:
+  When --with-merge is specified and you're on a spec branch (e.g. feat/specs-002-*),
+  the script will detect the parent branch and prompt for merge after archiving.
 EOF
             exit 0
             ;;
@@ -148,6 +158,80 @@ mv "$FEATURE_DIR" "$ARCHIVE_DIR"
 
 sorted_sync=$(printf '%s\n' "${SYNCED_ITEMS[@]}" | sort -u | tr '\n' ',' | sed 's/,$//')
 
+# Git branch merge integration
+MERGE_PERFORMED=false
+MERGE_ERROR=""
+
+if $WITH_MERGE && ! $JSON_MODE; then
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    
+    # Check if current branch looks like a spec feature branch
+    if [[ "$CURRENT_BRANCH" =~ ^feat/specs-[0-9]{3}- ]]; then
+        echo ""
+        echo "📌 Git Integration: Detected spec branch '$CURRENT_BRANCH'"
+        
+        # Try to detect parent branch
+        PARENT_BRANCH=$(git show-branch -a 2>/dev/null | \
+            grep '\*' | grep -v "$CURRENT_BRANCH" | \
+            head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\^.*//' || echo "")
+        
+        # Fallback: check common parent branches
+        if [[ -z "$PARENT_BRANCH" ]]; then
+            for candidate in main master develop; do
+                if git show-ref --verify --quiet "refs/heads/$candidate"; then
+                    PARENT_BRANCH="$candidate"
+                    break
+                fi
+            done
+        fi
+        
+        if [[ -n "$PARENT_BRANCH" ]]; then
+            echo "📍 Detected parent branch: $PARENT_BRANCH"
+            echo ""
+            read -p "🔀 Merge archived changes into '$PARENT_BRANCH'? (y/N): " -n 1 -r
+            echo ""
+            
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo "🔄 Merging $CURRENT_BRANCH into $PARENT_BRANCH..."
+                
+                # Check for uncommitted changes
+                if ! git diff --quiet || ! git diff --cached --quiet; then
+                    echo "⚠️  Uncommitted changes detected. Please commit or stash them first."
+                    MERGE_ERROR="Uncommitted changes present"
+                else
+                    # Perform the merge
+                    if git checkout "$PARENT_BRANCH" 2>&1 && \
+                       git merge --no-ff "$CURRENT_BRANCH" -m "feat(specs): merge archived $FEATURE_SLUG" 2>&1; then
+                        echo "✅ Successfully merged into $PARENT_BRANCH"
+                        MERGE_PERFORMED=true
+                        
+                        # Optional: delete the feature branch
+                        read -p "🗑️  Delete branch '$CURRENT_BRANCH'? (y/N): " -n 1 -r
+                        echo ""
+                        if [[ $REPLY =~ ^[Yy]$ ]]; then
+                            git branch -d "$CURRENT_BRANCH" 2>&1 && \
+                                echo "✅ Branch deleted: $CURRENT_BRANCH" || \
+                                echo "⚠️  Could not delete branch (use -D to force)"
+                        fi
+                    else
+                        MERGE_ERROR="Merge conflict or checkout failed"
+                        echo "❌ Merge failed. Please resolve manually."
+                        # Try to return to original branch
+                        git checkout "$CURRENT_BRANCH" 2>/dev/null || true
+                    fi
+                fi
+            else
+                echo "⏭️  Merge skipped"
+            fi
+        else
+            echo "⚠️  Could not detect parent branch automatically"
+            echo "💡 Tip: Manually merge with: git checkout <parent> && git merge --no-ff $CURRENT_BRANCH"
+        fi
+    else
+        echo "ℹ️  Not on a spec feature branch, skipping merge prompt"
+    fi
+fi
+
 if $JSON_MODE; then
     printf '{'
     printf '"archived_path":"%s"' "$ARCHIVE_DIR"
@@ -163,16 +247,24 @@ if $JSON_MODE; then
         done
         printf ']'
     fi
+    if $WITH_MERGE; then
+        printf ',"merge_performed":%s' "$($MERGE_PERFORMED && echo true || echo false)"
+        if [[ -n "$MERGE_ERROR" ]]; then
+            printf ',"merge_error":"%s"' "$MERGE_ERROR"
+        fi
+    fi
     printf '}\n'
 else
-    echo "Archived to: $ARCHIVE_DIR"
+    echo ""
+    echo "✅ Archive complete!"
+    echo "📦 Archived to: $ARCHIVE_DIR"
     if [[ -n "$sorted_sync" ]]; then
-        echo "Synced into specs/latest/: ${sorted_sync//,/ }"
+        echo "📝 Synced into specs/latest/: ${sorted_sync//,/ }"
     else
-        echo "No files synced into specs/latest/"
+        echo "📝 No files synced into specs/latest/"
     fi
     if [[ ${#UNFINISHED_TASKS[@]} -gt 0 ]]; then
-        echo "Warnings: Unfinished tasks detected in $TASKS_FILE"
+        echo "⚠️  Warnings: Unfinished tasks detected in $TASKS_FILE"
         printf '  %s\n' "${UNFINISHED_TASKS[@]}"
     fi
 fi

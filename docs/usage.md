@@ -33,6 +33,8 @@
 
 ## Workflow
 
+### Standard Workflow
+
 ```bash
 # 1. Complete feature implementation
 # 2. Validate
@@ -48,6 +50,37 @@ git diff specs/latest/
 git add specs/
 git commit -m "feat(spec): archive 002-my-feature"
 ```
+
+### Git-Integrated Workflow (Recommended)
+
+When working on a spec feature branch (e.g., `feat/specs-002-my-feature`):
+
+```bash
+# 1. Complete feature implementation on feature branch
+git checkout feat/specs-002-my-feature
+
+# 2. Validate
+.specify/scripts/bash/archive/core/validate-implementation.sh --feature 002-my-feature
+
+# 3. Archive with Git integration
+.specify/scripts/bash/archive/core/archive-feature.sh --feature 002-my-feature --with-merge
+
+# The script will:
+# - Archive specs to specs/archive/
+# - Merge files to specs/latest/
+# - Detect parent branch (e.g., main)
+# - Prompt: "Merge into main? (y/N)"
+# - If yes: Checkout main, merge feature branch, optionally delete it
+
+# 4. You're now on main branch with changes merged
+git push origin main
+```
+
+**Benefits**:
+- One-command workflow from archive to integration
+- Automatic branch detection and cleanup
+- Safe merge with conflict detection
+- No manual branch switching needed
 
 ## Custom Merge Rules
 

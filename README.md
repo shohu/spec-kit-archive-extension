@@ -58,6 +58,9 @@ The installer automatically sets up:
 # Archive a specific feature
 .specify/scripts/bash/archive/core/archive-feature.sh --feature 002-my-feature
 
+# Archive with Git branch merge prompt
+.specify/scripts/bash/archive/core/archive-feature.sh --feature 002-my-feature --with-merge
+
 # JSON output (for scripting)
 .specify/scripts/bash/archive/core/archive-feature.sh --feature 002-my-feature --json
 ```
@@ -164,6 +167,28 @@ After archiving with intelligent merge:
 - Information loss: **0 items**
 
 ## 🛠 Advanced Features
+
+### Git Branch Integration
+
+Automatically merge archived changes into parent branch:
+
+```bash
+# Archive and prompt for merge
+.specify/scripts/bash/archive/core/archive-feature.sh --feature 002-my-feature --with-merge
+```
+
+**How it works**:
+1. Detects if you're on a spec feature branch (e.g., `feat/specs-002-*`)
+2. Identifies parent branch (main/master/develop)
+3. Prompts: "Merge into parent branch?"
+4. If yes: Merges, optionally deletes feature branch
+5. If no: Continues with normal archive
+
+**Benefits**:
+- Streamlined workflow from feature completion to integration
+- Automatic parent branch detection
+- Safe merge with conflict detection
+- Optional branch cleanup
 
 ### Implementation Validation
 

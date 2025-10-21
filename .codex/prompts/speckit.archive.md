@@ -98,12 +98,40 @@ cd "$repo_root"
 
 ---
 
-### Step 5: Execute Archive Script
+### Step 5: Check Git Branch for Merge
 
-**Command**:
+**Detect current branch**:
+```bash
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+echo "Current branch: $current_branch"
+```
+
+**Check if on spec branch**:
+```bash
+if [[ "$current_branch" =~ ^feat/specs-[0-9]{3}- ]]; then
+  echo "✅ On spec feature branch"
+  echo "Merge into parent branch after archiving? (will prompt during archive)"
+else
+  echo "ℹ️  Not on spec feature branch, skipping merge option"
+fi
+```
+
+**Checkpoint**: ✅ Branch checked
+
+---
+
+### Step 6: Execute Archive Script
+
+**Command (without merge)**:
 ```bash
 cd "$repo_root"
 .specify/scripts/bash/archive/core/archive-feature.sh --json --feature "$feature_slug"
+```
+
+**Command (with merge prompt)**:
+```bash
+cd "$repo_root"
+.specify/scripts/bash/archive/core/archive-feature.sh --json --feature "$feature_slug" --with-merge
 ```
 
 **Script behavior**:
@@ -113,7 +141,8 @@ cd "$repo_root"
    - `data-model.md`: Merges entities intelligently
    - `contracts/`: Syncs directory
 2. Moves feature to `specs/archive/$feature_slug`
-3. Outputs JSON summary
+3. **With --with-merge**: Prompts for merge into parent branch, handles checkout and merge
+4. Outputs JSON summary
 
 **Error handling**: If script fails, display full error and stop.
 
@@ -121,7 +150,7 @@ cd "$repo_root"
 
 ---
 
-### Step 6: Parse Script Output
+### Step 7: Parse Script Output
 
 **Expected JSON structure**:
 ```json
@@ -129,7 +158,9 @@ cd "$repo_root"
   "archived_path": "specs/archive/XXX-feature-name/",
   "latest_path": "specs/latest/",
   "synced_items": ["spec.md", "plan.md", "data-model.md", "contracts/"],
-  "warnings": []
+  "warnings": [],
+  "merge_performed": true,
+  "merge_error": null
 }
 ```
 
@@ -139,7 +170,7 @@ cd "$repo_root"
 
 ---
 
-### Step 7: Verify Merged Files
+### Step 8: Verify Merged Files
 
 **Commands**:
 ```bash
@@ -150,11 +181,17 @@ ls -la contracts/
 
 **Output**: Show file sizes and contract count.
 
+**If merge was performed**:
+```bash
+git rev-parse --abbrev-ref HEAD  # Should show parent branch
+git log --oneline -1              # Show merge commit
+```
+
 **Checkpoint**: ✅ Merge verified
 
 ---
 
-### Step 8: Generate Summary
+### Step 9: Generate Summary
 
 **Format**:
 ```
@@ -175,7 +212,17 @@ ls -la contracts/
 ⚠️  Warnings:
    {warnings or "None"}
 
+🔀 Git Integration:
+   {if merged: "✅ Merged into {parent-branch}, feature branch deleted"}
+   {if skipped: "Merge skipped, changes ready for commit"}
+
 📌 Next steps:
+   {if merged}:
+   1. Current branch: {parent-branch}
+   2. Push: git push origin {parent-branch}
+   3. Continue: /speckit.specify (for next feature)
+   
+   {if not merged}:
    1. Review: git status
    2. Stage: git add specs/archive/ specs/latest/
    3. Commit: git commit -m "feat: archive {feature-slug}"

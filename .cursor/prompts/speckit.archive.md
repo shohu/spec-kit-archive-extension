@@ -58,11 +58,19 @@ You **MUST** consider the user input before proceeding (if not empty).
      - Warnings are informational only, do not block archiving
    - **If validation script fails**: Fall back to manual grep-based checks
 
-4. **Run archive script**
+4. **Check Git branch and prompt for merge**
+   - Detect current branch: `git rev-parse --abbrev-ref HEAD`
+   - If on a spec branch (pattern: `feat/specs-XXX-*`):
+     - Ask user: "🔀 Archive completed. Merge into parent branch after archiving? (y/N)"
+     - If yes, add `--with-merge` flag to archive command
+   - If not on spec branch or user declines, proceed without merge flag
+
+5. **Run archive script**
    - Command (bash):\
-     `(cd "$repo_root" && .specify/scripts/bash/archive/core/archive-feature.sh --json --feature "$feature_slug")`
+     `(cd "$repo_root" && .specify/scripts/bash/archive/core/archive-feature.sh --json --feature "$feature_slug" [--with-merge])`
    - Use `run_terminal_cmd` tool with `explanation` describing the merge operation
    - Run **exactly once** per invocation
+   - **With --with-merge flag**: Script will prompt for merge confirmation and handle branch operations
    - The script performs:
      - **Intelligent merge** using constitution-driven strategies:
        - `spec.md`: Accumulates user stories, merges requirements by ID
@@ -78,19 +86,19 @@ You **MUST** consider the user input before proceeding (if not empty).
      3. Offer to retry or manual intervention steps
      - Do NOT silently fail - always surface errors to user
 
-5. **Parse JSON output**
-   - Expect keys: `archived_path`, `latest_path`, `synced_items`, `warnings`
+6. **Parse JSON output**
+   - Expect keys: `archived_path`, `latest_path`, `synced_items`, `warnings`, `merge_performed` (if --with-merge used)
    - Use absolute paths
    - **If JSON parsing fails**: Fall back to reading output files directly with `read_file`
 
-6. **Post-archive verification** (parallel reads)
+7. **Post-archive verification** (parallel reads)
    - Read merged `specs/latest/spec.md` to count user stories
    - Read merged `specs/latest/plan.md` to verify technical sections
    - Read merged `specs/latest/data-model.md` to count entities
    - List `specs/latest/contracts/` directory contents
    - **Summarize changes** with concrete numbers and file paths
 
-7. **Summarize results**
+8. **Summarize results**
    - Show archived location: `specs/archive/$feature_slug/`
    - List merged files in `specs/latest/`:
      - `spec.md` (user stories accumulated, requirements merged by ID)
@@ -99,10 +107,13 @@ You **MUST** consider the user input before proceeding (if not empty).
      - `contracts/` (synced)
    - Mention validation results if any
    - Note any remaining unchecked tasks (informational)
+   - **If merge was performed**: Show merge result (branch name, status)
 
-8. **Next steps**
-   - Recommend: `git status` to review changes
-   - Recommend: `git add specs/archive/ specs/latest/` to stage changes
+9. **Next steps**
+   - **If merged**: Branch is now on parent, ready for push
+   - **If not merged**: 
+     - Recommend: `git status` to review changes
+     - Recommend: `git add specs/archive/ specs/latest/` to stage changes
    - Suggest: Create next feature with `/speckit.specify` or review merged specs
    - Optional: Run `/speckit.plan` for the next feature
 
@@ -132,7 +143,17 @@ Then show the main result:
 ⚠️  Warnings:
    <if any outstanding tasks or validation warnings, or "None">
 
+🔀 Git Integration:
+   <if merge was performed: "✅ Merged into <parent-branch>, branch deleted">
+   <if merge was skipped: "Merge skipped, changes staged for commit">
+
 📌 Next steps:
+   <if merged>:
+   1. Current branch: <parent-branch>
+   2. Push: git push origin <parent-branch>
+   3. Continue: /speckit.specify (for next feature)
+   
+   <if not merged>:
    1. Review: git status
    2. Stage: git add specs/archive/ specs/latest/
    3. Commit: git commit -m "feat: archive <feature-slug>"
