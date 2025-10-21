@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Test outputs
+/tmp/
+test-results/
+
+# Note: AI editor prompts are tracked
+# .codex/prompts/speckit.archive.md
+# .cursor/prompts/speckit.archive.md
+

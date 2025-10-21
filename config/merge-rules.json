@@ -1,0 +1,133 @@
+{
+  "rules": {
+    "背景と目的": {
+      "strategy": "latest_with_context",
+      "reason": "最新の目的を優先するが、中核原則への言及は保持"
+    },
+    "ユーザシナリオとテスト": {
+      "strategy": "accumulate",
+      "reason": "各ストーリーは憲章の異なるステージ（探索・配合・都市・戦利品）に対応するため累積"
+    },
+    "ユーザーストーリー": {
+      "strategy": "accumulate",
+      "reason": "ユーザシナリオとテストの別名パターン"
+    },
+    "要件": {
+      "strategy": "merge_by_id",
+      "id_pattern": "^- \\*\\*(FR|NFR)-(\\d+)",
+      "reason": "機能要件は憲章原則の具体化であり、ID単位で管理"
+    },
+    "機能要件": {
+      "strategy": "merge_by_id",
+      "id_pattern": "^- \\*\\*(FR)-(\\d+)",
+      "reason": "要件セクションのサブセクション"
+    },
+    "非機能要件": {
+      "strategy": "merge_by_id",
+      "id_pattern": "^- \\*\\*(NFR)-(\\d+)",
+      "reason": "要件セクションのサブセクション"
+    },
+    "主要エンティティ": {
+      "strategy": "merge_entities",
+      "reason": "同名エンティティは定義をマージ、新規エンティティは追加"
+    },
+    "受け入れ基準": {
+      "strategy": "merge_by_id",
+      "id_pattern": "^- \\*\\*(AC)-(\\d+)",
+      "reason": "受け入れ基準はユーザーストーリーの検証条件"
+    },
+    "成功指標": {
+      "strategy": "accumulate_unique",
+      "id_pattern": "^- \\*\\*(SC)-(\\d+)",
+      "reason": "憲章の60分ループ目標を複数角度で測定"
+    },
+    "測定可能な成果": {
+      "strategy": "accumulate_unique",
+      "id_pattern": "^- \\*\\*(SC)-(\\d+)",
+      "reason": "成功指標セクションのサブセクション"
+    },
+    "テレメトリ計画": {
+      "strategy": "accumulate",
+      "reason": "計測項目は累積して全体像を把握"
+    },
+    "想定と依存関係": {
+      "strategy": "accumulate",
+      "reason": "前提条件は累積して整合性を保つ"
+    },
+    "前提と仮定": {
+      "strategy": "accumulate",
+      "reason": "想定と依存関係の別名パターン"
+    },
+    "スコープ外と制約": {
+      "strategy": "accumulate",
+      "reason": "制約事項は累積して範囲を明確化"
+    },
+    "エッジケース": {
+      "strategy": "accumulate",
+      "reason": "例外処理は累積して網羅性を高める"
+    },
+    "サマリ": {
+      "strategy": "latest",
+      "reason": "plan.md: 最新機能の概要を優先"
+    },
+    "技術コンテキスト": {
+      "strategy": "accumulate",
+      "reason": "plan.md: 技術スタックの履歴を保持"
+    },
+    "憲章チェック": {
+      "strategy": "accumulate",
+      "reason": "plan.md: 各フェーズの憲章準拠チェックを累積"
+    },
+    "プロジェクト構造": {
+      "strategy": "latest",
+      "reason": "plan.md: 最新のディレクトリ構造を反映"
+    },
+    "アーキテクチャ概要": {
+      "strategy": "latest",
+      "reason": "plan.md: 最新のアーキテクチャ設計を優先"
+    },
+    "データフロー": {
+      "strategy": "latest",
+      "reason": "plan.md: 最新のデータフロー図を優先"
+    },
+    "パフォーマンスと計測": {
+      "strategy": "accumulate",
+      "reason": "plan.md: 計測項目は累積して全体を把握"
+    },
+    "リスクと対応": {
+      "strategy": "accumulate",
+      "reason": "plan.md: リスクは累積して網羅性を高める"
+    },
+    "フェーズ計画": {
+      "strategy": "latest",
+      "reason": "plan.md: 最新のフェーズ計画を優先"
+    },
+    "複雑性トラッキング": {
+      "strategy": "accumulate",
+      "reason": "plan.md: 複雑性指標は累積して推移を追跡"
+    },
+    "仕様・計画整合レビュー": {
+      "strategy": "latest",
+      "reason": "plan.md: 最新のレビュー結果を優先"
+    },
+    "依存関係と実行順序": {
+      "strategy": "accumulate",
+      "reason": "tasks.md: 依存関係は累積して全体の制約を把握"
+    },
+    "実行方針": {
+      "strategy": "latest",
+      "reason": "tasks.md: 最新の実行戦略を優先"
+    }
+  },
+  "phase_pattern": "^##\\s*フェーズ\\d+:",
+  "entity_pattern": "^##\\s*[A-Z][a-zA-Z]+$",
+  "default_strategy": "latest",
+  "constitution_principles": [
+    "一時間コアループ",
+    "探索が世界を拡張する",
+    "血統戦略の深化",
+    "移動が都市を育てる",
+    "戦利品が経済を回す"
+  ]
+}
+
