@@ -26,6 +26,13 @@ When a feature is complete, this system:
 
 # Validate implementation alignment
 ./core/validate-implementation.sh --feature 001-example
+
+# Check for feature number conflicts
+./core/check-feature-conflict.sh 003
+
+# Get next available feature number (including archived)
+source ./hooks/pre-specify.sh
+echo $SPECKIT_NEXT_FEATURE_NUMBER
 ```
 
 ### Installation Testing
@@ -242,3 +249,65 @@ The `/speckit.archive` command provides a complete workflow with validation, mer
 2. Verify merge rules: `cat config/merge-rules.json | jq '.rules["Section Name"]'`
 3. Test section extraction: Run AWK parser independently
 4. Compare expected vs actual: `diff -u expected.md actual.md`
+
+## Integration with Spec-Kit Core
+
+This extension is designed to be **non-invasive** to spec-kit core functionality. It does not override or replace spec-kit's commands, instead providing complementary archiving capabilities.
+
+### Feature Number Management
+
+**Problem**: After archiving all features, the `specs/` directory contains only `latest/` and `archive/`. When creating a new feature with spec-kit's `/specify` command, it may restart numbering from 001, causing conflicts with archived features in `specs/archive/001-xxx/`.
+
+**Solution**: This extension provides helper scripts that check both current and archived features:
+
+```bash
+# Get next available feature number (checks both specs/ and specs/archive/)
+source .specify/scripts/bash/archive/hooks/pre-specify.sh
+echo $SPECKIT_NEXT_FEATURE_NUMBER  # e.g., 004 if 003 is in archive/
+```
+
+**Usage in AI commands** (e.g., `.claude/commands/specify.md`):
+
+```bash
+# Before creating a new feature, get the next safe number
+if [[ -f .specify/scripts/bash/archive/hooks/pre-specify.sh ]]; then
+    source .specify/scripts/bash/archive/hooks/pre-specify.sh
+    NEXT_NUMBER=$(printf "%03d" $SPECKIT_NEXT_FEATURE_NUMBER)
+else
+    # Fallback: only check specs/ (original behavior)
+    NEXT_NUMBER=$(ls -1d specs/[0-9][0-9][0-9]-* 2>/dev/null | \
+                  sed 's/.*\/\([0-9]*\)-.*/\1/' | sort -nr | head -n1)
+    NEXT_NUMBER=$(printf "%03d" $((10#$NEXT_NUMBER + 1)))
+fi
+```
+
+**Validation**: Before creating a feature, check for conflicts:
+
+```bash
+# Validate that a feature number doesn't conflict with archived features
+.specify/scripts/bash/archive/core/check-feature-conflict.sh 005
+
+# Output if conflict:
+# ❌ Error: Feature number 005 already exists in archive/
+# 📦 Archived feature(s): specs/archive/005-old-feature/
+# 💡 Suggestion: Next available: 006
+```
+
+**Compatibility**:
+- ✅ Does not modify spec-kit core commands
+- ✅ Works as an opt-in helper (fallback to original behavior if not sourced)
+- ✅ Spec-kit updates do not affect this functionality
+- ✅ Can be proposed to spec-kit core for future integration
+
+### When to Use These Helpers
+
+1. **Creating new features**: Use `pre-specify.sh` to get the next safe number
+2. **Validating feature numbers**: Use `check-feature-conflict.sh` before directory creation
+3. **AI command integration**: Source the hook in `/specify` or similar commands
+
+### Why This Design?
+
+- **Non-invasive**: Spec-kit core remains unchanged
+- **Backward compatible**: Works with any spec-kit version
+- **Future-proof**: If spec-kit adds native support, these scripts become no-ops
+- **Opt-in**: Projects can choose to use or ignore these helpers

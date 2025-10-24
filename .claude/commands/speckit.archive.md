@@ -22,6 +22,8 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 **Context retention**: Maintain all validation results and warnings across execution steps.
 
+**Note**: This command is designed to work alongside spec-kit's `/specify` command. After archiving, use the provided hooks to avoid feature number conflicts when creating new features (see "Integration with /specify" section below).
+
 ## Outline
 
 1. **Determine feature slug** (auto-detection if not provided)
@@ -160,6 +162,34 @@ Then show the main result:
 - If multiple recent features: Show list and ask which one to archive
 - If archive script fails: Report the error with stderr/stdout and suggest fixes
 - If script missing: Offer to check installation or provide manual merge steps
+
+## Integration with /specify Command
+
+After archiving features, the `specs/` directory may only contain `latest/` and `archive/`. When creating a new feature with spec-kit's `/specify` command, the numbering should account for archived features to avoid conflicts.
+
+**Helper Script**: This extension provides a hook to get the next safe feature number:
+
+```bash
+# Get next available feature number (checks both specs/ and specs/archive/)
+if [[ -f .specify/scripts/bash/archive/hooks/pre-specify.sh ]]; then
+    source .specify/scripts/bash/archive/hooks/pre-specify.sh
+    NEXT_NUMBER=$(printf "%03d" $SPECKIT_NEXT_FEATURE_NUMBER)
+else
+    # Fallback: only check specs/ (original behavior)
+    NEXT_NUMBER=$(ls -1d specs/[0-9][0-9][0-9]-* 2>/dev/null | \
+                  sed 's/.*\/\([0-9]*\)-.*/\1/' | sort -nr | head -n1)
+    NEXT_NUMBER=$(printf "%03d" $((10#$NEXT_NUMBER + 1)))
+fi
+```
+
+**Validation**: Before creating a new feature, validate the number:
+
+```bash
+# Check for conflicts with archived features
+.specify/scripts/bash/archive/core/check-feature-conflict.sh $NEXT_NUMBER
+```
+
+**Design Note**: This is an opt-in helper that does not modify spec-kit core. It works with any spec-kit version and can be safely ignored if not needed.
 
 ## Claude Code Best Practices
 

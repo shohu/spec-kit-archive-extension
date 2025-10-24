@@ -79,23 +79,36 @@ check_requirements() {
 install_archive_system() {
     local target="$1"
     local archive_dest="$target/.specify/scripts/bash/archive"
-    
+
     log "Installing archive system to: $archive_dest"
-    
+
     # Copy archive directory
     if [[ -d "$SCRIPT_DIR" ]]; then
         # Local installation (from cloned repo)
         mkdir -p "$archive_dest"
-        
-        # Copy files and directories, excluding .git and install.sh
-        cd "$SCRIPT_DIR"
-        find . -maxdepth 1 ! -name '.' ! -name '.git' ! -name 'install.sh' ! -name 'README_ARCHIVE.md' -exec cp -r {} "$archive_dest/" \;
-        
-        cd - >/dev/null
+
+        # Copy core directories
+        for dir in core config hooks; do
+            if [[ -d "$SCRIPT_DIR/$dir" ]]; then
+                cp -r "$SCRIPT_DIR/$dir" "$archive_dest/"
+                log "  ✓ Copied $dir/"
+            fi
+        done
+
+        # Copy essential files (excluding development files)
+        for file in "$SCRIPT_DIR"/*.{json,md} 2>/dev/null; do
+            if [[ -f "$file" ]]; then
+                local basename=$(basename "$file")
+                # Skip README and test files
+                if [[ "$basename" != "README.md" && "$basename" != "TESTING.md" ]]; then
+                    cp "$file" "$archive_dest/"
+                fi
+            fi
+        done
     else
         error "Archive source directory not found: $SCRIPT_DIR"
     fi
-    
+
     log "✅ Archive system installed"
 }
 
@@ -172,10 +185,11 @@ update_gitignore() {
 .cursor/commands/*
 !.cursor/commands/speckit.archive.md
 
-# Archive scripts (whitelist approach - track only core and config)
+# Archive scripts (whitelist approach - track only core, config, and hooks)
 .specify/scripts/bash/archive/*
 !.specify/scripts/bash/archive/core/
 !.specify/scripts/bash/archive/config/
+!.specify/scripts/bash/archive/hooks/
 EOF
             log "✅ .gitignore updated (Spec-Kit Archive Extension)"
         else
@@ -213,6 +227,17 @@ show_next_steps() {
 
 4. Or use AI command:
    /speckit.archive
+
+💡 Spec-Kit Integration:
+
+When creating new features with /specify, avoid number conflicts with archived features:
+
+   # Get next safe feature number
+   source .specify/scripts/bash/archive/hooks/pre-specify.sh
+   echo \$SPECKIT_NEXT_FEATURE_NUMBER
+
+   # Validate before creating
+   .specify/scripts/bash/archive/core/check-feature-conflict.sh 005
 
 📚 Documentation:
    - README: $target/.specify/scripts/bash/archive/README.md
