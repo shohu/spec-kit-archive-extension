@@ -96,7 +96,8 @@ install_archive_system() {
         done
 
         # Copy essential files (excluding development files)
-        for file in "$SCRIPT_DIR"/*.{json,md} 2>/dev/null; do
+        shopt -s nullglob
+        for file in "$SCRIPT_DIR"/*.json "$SCRIPT_DIR"/*.md; do
             if [[ -f "$file" ]]; then
                 local basename=$(basename "$file")
                 # Skip README and test files
@@ -105,6 +106,7 @@ install_archive_system() {
                 fi
             fi
         done
+        shopt -u nullglob
     else
         error "Archive source directory not found: $SCRIPT_DIR"
     fi
